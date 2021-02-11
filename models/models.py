@@ -1,6 +1,6 @@
 from models.base_models import *
 
-class CXRNet(nn.Module):
+class ECGNet(nn.Module):
     def __init__(self, in_channels, out_channels, in_features, num_classes):
         super().__init__()
         self.feature_extractor = FeatureExtractor(in_channels, out_channels)
