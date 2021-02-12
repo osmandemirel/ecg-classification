@@ -20,7 +20,7 @@ class ECGDataset(Dataset):
         :param transform: transforms to be applied on data set
         """
         self.class_list = class_list
-        self.labels = self._paths_to_labels(root_dir)
+        self.labels = None
         self.file_list = self._load_data(root_dir)
         self.dataset = self._shuffle(seed)
 
@@ -35,9 +35,7 @@ class ECGDataset(Dataset):
         return class_tensor
 
     def _paths_to_labels(self, path):
-        glob_path = path + os.sep + '*.hea'
-        label_paths = glob.glob(pathname=glob_path, recursive=True)
-        labels = [self._get_labels(path) for path in label_paths]
+        labels = [self._get_labels(p.replace(".mat", ".hea")) for p in path]
         return labels
 
     def _load_data(self,path):
@@ -49,7 +47,8 @@ class ECGDataset(Dataset):
         """
         glob_path = path + os.sep + '*.mat'
         paths = glob.glob(pathname=glob_path, recursive=True)
-        assert len(paths)==len(self.labels)
+        self.labels = self._paths_to_labels(paths)
+        assert len(paths) == len(self.labels)
         return [(paths[idx], self.labels[idx]) for idx in range(len(self.labels))]
 
     def _shuffle(self, seed):
@@ -76,5 +75,6 @@ class ECGDataset(Dataset):
         file_path, label = self.dataset[idx]
         x = io.loadmat(file_path)
         recording = torch.tensor(x['val'])
+        recording.resize_([12, 1, 5000])
 
         return (recording, label)
