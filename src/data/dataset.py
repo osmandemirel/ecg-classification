@@ -49,7 +49,7 @@ class ECGDataset(Dataset):
         paths = glob.glob(pathname=glob_path, recursive=True)
         self.labels = self._paths_to_labels(paths)
         assert len(paths) == len(self.labels)
-        return [(paths[idx], self.labels[idx]) for idx in range(len(self.labels))]
+        return [(paths[idx], self.labels[idx]) for idx in range(len(self.labels)) if self.labels[idx].sum().item() > 0]
 
     def _shuffle(self, seed):
         """
