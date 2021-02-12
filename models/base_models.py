@@ -40,16 +40,16 @@ class FeatureExtractor(nn.Module):
     def forward(self,x):
         x = self.conv_block_1(x)
         x = self.conv_block_2(x)
-        x = self.max_pool_1(x)
+        #x = self.max_pool_1(x)
         x = self.conv_block_3(x)
         x = self.conv_block_4(x)
-        x = self.max_pool_2(x)
+        #x = self.max_pool_2(x)
         x = self.conv_block_5(x)
         x = self.conv_block_6(x)
-        x = self.max_pool_3(x)
+        #x = self.max_pool_3(x)
         x = self.conv_block_7(x)
         x = self.conv_block_8(x)
-        x = self.max_pool_4(x)
+        #x = self.max_pool_4(x)
         x = self.conv_layer(x)
         return x
 
