@@ -2,7 +2,7 @@ import os
 import torch
 from torch import optim
 from pathlib import Path
-from src.data.dataset import ChestXrayDataset
+from src.data.dataset import ECGDataset
 
 
 class Trainer:
