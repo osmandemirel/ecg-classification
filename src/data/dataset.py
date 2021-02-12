@@ -74,7 +74,11 @@ class ECGDataset(Dataset):
         """
         file_path, label = self.dataset[idx]
         x = io.loadmat(file_path)
-        recording = torch.tensor(x['val'])
-        recording.resize_([12, 1, 5000])
+        x['val']
+        recording = torch.tensor(x['val'], dtype=torch.float)
+        norm = torch.norm(recording,2,1,True)
+        recording = torch.div(recording, norm)
+        recording[torch.isnan(recording)] = 0 
+        recording.resize_([12, 5000])
 
         return (recording, label)
