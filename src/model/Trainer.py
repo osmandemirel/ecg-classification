@@ -69,7 +69,7 @@ class Trainer:
 
             iter_loss += float(loss.item())
             iter_correct_prediction += (torch.where(out>0.05, 1, 0) == label).sum()
-        print(out)
+  
         print(iter_loss / len(self.train_loader))
         print(iter_correct_prediction / (len(self.train_loader) * self.config["batch_size"]))
         self.metrics["train_loss"].append(iter_loss / len(self.train_loader))    
