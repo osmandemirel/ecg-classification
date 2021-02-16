@@ -1,4 +1,5 @@
 import os
+from math import isnan
 import torch
 from torch import nn
 from torch import optim
@@ -32,7 +33,6 @@ class Trainer:
             self.model.to(torch.device('cuda:0'))
         self.optimizer = self.__set_optimizer()
         self.RESULT_SAVE_PATH = self.config["result_path"]
-        self.sf = nn.Softmax()
 
     def train_supervised(self,n_epochs=None):
         if n_epochs is None:
@@ -68,10 +68,11 @@ class Trainer:
             self.optimizer.step()
 
             iter_loss += float(loss.item())
-            iter_correct_prediction += (torch.where(out>0.05, 1, 0) == label).sum()
+            _, predicted = torch.max(out, 1)
+            iter_correct_prediction += (predicted == label).sum()
   
-        print(iter_loss / len(self.train_loader))
-        print(iter_correct_prediction / (len(self.train_loader) * self.config["batch_size"]))
+        print("Training Loss:", iter_loss / len(self.train_loader))
+        print("Training Acc:", iter_correct_prediction / (len(self.train_loader) * self.config["batch_size"]))
         self.metrics["train_loss"].append(iter_loss / len(self.train_loader))    
         self.metrics["train_acc"].append(iter_correct_prediction / (len(self.train_loader) * self.config["batch_size"]))
         torch.cuda.empty_cache()
@@ -81,6 +82,8 @@ class Trainer:
         val_correct_prediction = 0
         self.model.eval()
         with torch.no_grad():
+            self.optimizer.zero_grad()
+            self.model.zero_grad()
             for data, label in self.val_loader:
                 if self.gpu_flag:
                     data = data.to(torch.device('cuda:0'))
@@ -90,10 +93,12 @@ class Trainer:
                 loss = self.criteria(out, label)
 
                 val_loss += float(loss.item())
-            # print("Validation: Loss:{}, val_correct_prediction / len(self.val_loader) / self.config["batch_size"]))
-
+                _, predicted = torch.max(out, 1)
+                val_correct_prediction += (predicted == label).sum()
+            print("Validation Loss:", val_loss / len(self.val_loader))
+            print("Validation Acc:", val_correct_prediction / (len(self.val_loader) * self.config["batch_size"]))
             self.metrics["val_loss"].append(val_loss / len(self.val_loader))
-            #self.metrics["val_acc"].append(val_correct_prediction / (len(self.val_loader) * self.config["batch_size"]))
+            self.metrics["val_acc"].append(val_correct_prediction / (len(self.val_loader) * self.config["batch_size"]))
 
     def __set_optimizer(self):
         weight_decay = self.config["weight_decay"] if "weight_decay" in self.config else 0
@@ -127,4 +132,3 @@ class Trainer:
         with open( os.path.join(self.RESULT_SAVE_PATH, "metrics.txt"), "w") as file:
             file.write(str(self.metrics)+"\n")
             file.close()
-
