@@ -84,7 +84,7 @@ class ECGDataset(Dataset):
         recording = torch.tensor(x['val'], dtype=torch.float)
         norm = torch.norm(recording,2,1,True)
         recording = torch.div(recording, norm)
-        recording[torch.isnan(recording)] = 0 
         recording.resize_([12, 5000])
+        recording[torch.isnan(recording)] = 0
 
         return (recording, label)
