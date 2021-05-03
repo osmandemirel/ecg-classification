@@ -74,36 +74,36 @@ class ECGHeartbeat(nn.Module):
         ECG Heartbeat Classification: A Deep Transferable Representation
         Mohammad Kachuee, Shayan Fazeli, Majid Sarrafzadeh
     """
-    def __init__(self):
+    def __init__(self, in_channels,num_classes):
         super(ECGHeartbeat, self).__init__()
         self.net = nn.Sequential(
-            nn.Conv2d(in_channels=1,out_channels=16,kernel_size=5,stride=1,padding=(1, 1)),
+            nn.Conv1d(in_channels=in_channels,out_channels=16,kernel_size=5,stride=1,padding=1),
             nn.ReLU(),
-            nn.Conv2d(in_channels=16,out_channels=16,kernel_size=3,stride=1,padding=(1, 1)),
-            nn.ReLU(),
-            nn.Dropout(p=0.1),
-            nn.Conv2d(in_channels=16,out_channels=32,kernel_size=3,stride=1,padding=(1, 1)),
-            nn.ReLU(),
-            nn.Conv2d(in_channels=32,out_channels=32,kernel_size=3,stride=1,padding=(1, 1)),
+            nn.Conv1d(in_channels=16,out_channels=16,kernel_size=3,stride=1,padding=1),
             nn.ReLU(),
             nn.Dropout(p=0.1),
-            nn.Conv2d(in_channels=32,out_channels=32,kernel_size=3,stride=1,padding=(1, 1)),
+            nn.Conv1d(in_channels=16,out_channels=32,kernel_size=3,stride=1,padding=1),
             nn.ReLU(),
-            nn.Conv2d(in_channels=32,out_channels=32,kernel_size=3,stride=1,padding=(1, 1)),
+            nn.Conv1d(in_channels=32,out_channels=32,kernel_size=3,stride=1,padding=1),
             nn.ReLU(),
             nn.Dropout(p=0.1),
-            nn.Conv2d(in_channels=32,out_channels=256,kernel_size=3,stride=1,padding=(1, 1)),
+            nn.Conv1d(in_channels=32,out_channels=32,kernel_size=3,stride=1,padding=1),
             nn.ReLU(),
-            nn.Conv2d(in_channels=256,out_channels=256,kernel_size=3,stride=1,padding=(1, 1)),
+            nn.Conv1d(in_channels=32,out_channels=32,kernel_size=3,stride=1,padding=1),
+            nn.ReLU(),
+            nn.Dropout(p=0.1),
+            nn.Conv1d(in_channels=32,out_channels=256,kernel_size=3,stride=1,padding=1),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=256,out_channels=256,kernel_size=3,stride=1,padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2,stride=2),
             nn.Dropout(p=0.2),
             nn.Flatten(),
-            nn.Linear(in_features=256*6*5,out_features=64),
+            nn.Linear(in_features=320128 - 256,out_features=64),
             nn.ReLU(),
             nn.Linear(in_features=64,out_features=64),
             nn.ReLU(),
-            nn.Linear(in_features=64,out_features=27),
+            nn.Linear(in_features=64,out_features=num_classes),
             nn.Sigmoid()
             )
 
